@@ -8,6 +8,8 @@
 #include <utility>
 #include <cmath>
 
+#include <iostream>
+
 struct DirectionGrow {
 	int8_t next_gene[2];
 	int8_t priority;
@@ -22,7 +24,6 @@ struct DirectionGrow {
 class Gene {
 public:
 	static constexpr uint8_t max_v = 32;
-	static constexpr int mutation = 1024;
 	static constexpr int priority_c = 64;
 
 	Gene() {
@@ -33,33 +34,53 @@ public:
 			og.priority_add = rand_int(max_v + 1) - max_v / 2;
 		}
 	}
-	Gene(const Gene& parent_gene) {
-		for (std::size_t i = 0; i < next_outgrowth_.size(); ++i) {
-			auto& og = next_outgrowth_[i];
-			auto& pg = parent_gene.next_outgrowth_[i];
-			og.next_gene[0] = rand_int(mutation) ? pg.next_gene[0] : rand_int(max_v);
-			og.next_gene[1] = rand_int(mutation) ? pg.next_gene[1] : rand_int(max_v);
-			og.priority = rand_int(mutation) ? pg.priority : rand_int(max_v + 1) - max_v / 2;
-			og.priority_add = rand_int(mutation) ? pg.priority_add : rand_int(max_v + 1) - max_v / 2;
+//	Gene(const Gene& parent_gene) {
+//		for (std::size_t i = 0; i < next_outgrowth_.size(); ++i) {
+//			auto& og = next_outgrowth_[i];
+//			auto& pg = parent_gene.next_outgrowth_[i];
+//			og.next_gene[0] = rand_int(mutation) ? pg.next_gene[0] : rand_int(max_v);
+//			og.next_gene[1] = rand_int(mutation) ? pg.next_gene[1] : rand_int(max_v);
+//			og.priority = rand_int(mutation) ? pg.priority : rand_int(max_v + 1) - max_v / 2;
+//			og.priority_add = rand_int(mutation) ? pg.priority_add : rand_int(max_v + 1) - max_v / 2;
+//		}
+//	}
+//	Gene(Gene&& parent_gene) {
+//		next_outgrowth_ = std::move(parent_gene.next_outgrowth_);
+//	}
+//	Gene& operator=(const Gene& parent_gene) {
+//		for (std::size_t i = 0; i < next_outgrowth_.size(); ++i) {
+//			auto& og = next_outgrowth_[i];
+//			const auto& pg = parent_gene.next_outgrowth_[i];
+//			og.next_gene[0] = rand_int(mutation) ? pg.next_gene[0] : rand_int(max_v);
+//			og.next_gene[1] = rand_int(mutation) ? pg.next_gene[1] : rand_int(max_v);
+//			og.priority = rand_int(mutation) ? pg.priority : rand_int(max_v + 1) - max_v / 2;
+//			og.priority_add = rand_int(mutation) ? pg.priority_add : rand_int(max_v + 1) - max_v / 2;
+//		}
+//		return *this;
+//	}
+//	Gene& operator=(Gene&& parent_gene) {
+//		next_outgrowth_ = std::move(parent_gene.next_outgrowth_);
+//		return *this;
+//	}
+
+	void mutation() {
+		auto& mut_og = next_outgrowth_[rand_int(next_outgrowth_.size())];
+		switch (rand_int(4)) {
+		case 0:
+			mut_og.next_gene[0] = rand_int(max_v);
+			break;
+		case 1:
+			mut_og.next_gene[1] = rand_int(max_v);
+			break;
+		case 2:
+			mut_og.priority = rand_int(max_v + 1) - max_v / 2;
+			break;
+		case 3:
+			mut_og.priority_add = rand_int(max_v + 1) - max_v / 2;
+			break;
+		default:
+			std::cout << "Error\n";
 		}
-	}
-	Gene(Gene&& parent_gene) {
-		next_outgrowth_ = std::move(parent_gene.next_outgrowth_);
-	}
-	Gene& operator=(const Gene& parent_gene) {
-		for (std::size_t i = 0; i < next_outgrowth_.size(); ++i) {
-			auto& og = next_outgrowth_[i];
-			const auto& pg = parent_gene.next_outgrowth_[i];
-			og.next_gene[0] = rand_int(mutation) ? pg.next_gene[0] : rand_int(max_v);
-			og.next_gene[1] = rand_int(mutation) ? pg.next_gene[1] : rand_int(max_v);
-			og.priority = rand_int(mutation) ? pg.priority : rand_int(max_v + 1) - max_v / 2;
-			og.priority_add = rand_int(mutation) ? pg.priority_add : rand_int(max_v + 1) - max_v / 2;
-		}
-		return *this;
-	}
-	Gene& operator=(Gene&& parent_gene) {
-		next_outgrowth_ = std::move(parent_gene.next_outgrowth_);
-		return *this;
 	}
 
 	std::pair<uint8_t, int> next(int idx, int age) const {
@@ -81,7 +102,7 @@ public:
 		return next_outgrowth_ == another.next_outgrowth_;
 	}
 
-//private:
+private:
 	std::array<DirectionGrow, 4> next_outgrowth_;
 };
 

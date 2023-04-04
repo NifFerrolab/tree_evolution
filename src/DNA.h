@@ -6,6 +6,7 @@
 #include <opencv2/core.hpp>
 
 #include <array>
+#include <cmath>
 
 
 class DNA {
@@ -102,15 +103,25 @@ public:
 	}
 
 	DNA(const DNA& parent_dna) {
-		for (std::size_t i = 0; i < genes_.size(); ++i) {
-			genes_[i] = parent_dna.genes_[i];
-		}
-		if (genes_ != parent_dna.genes_) {
+		float mut = rand_float();
+		genes_ = parent_dna.genes_;
+		if (mut < mutation_p_) {
+			color_ = parent_dna.color_;
+		} else {
+			int mut_c = 1;
+			mut -= mutation_p_;
+			float p = mutation_p_ * 256 / 1023;
+			while (mut > p) {
+				mut -= p;
+				++mut_c;
+				p *= (float)(257 - mut_c) / mut_c / 1023;
+			}
+			for (int i = 0; i < mut_c; ++i) {
+				genes_[rand_int(size)].mutation();
+			}
 			color_[0] = (parent_dna.color_[0] + rand_int(5) + 178) % 180;
 			color_[1] = parent_dna.color_[1];
 			color_[2] = std::max(std::min((parent_dna.color_[2] + rand_int(5) - 2), 255), 64);
-		} else {
-			color_ = parent_dna.color_;
 		}
 	}
 
@@ -141,6 +152,7 @@ public:
 		return priority;
 	}
 private:
+	static constexpr float mutation_p_ = std::pow(1023. / 1024, 256);
 	std::array<Gene, size> genes_ {};
 	cv::Vec3b color_;
 };
