@@ -105,9 +105,8 @@ public:
 //		genes_[15].next_outgrowth_[3] = {{31, 31}, 0, 0};
 	}
 
-	DNA(const DNA& parent_dna) {
+	DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
 		float mut = rand_float();
-		genes_ = parent_dna.genes_;
 		if (mut < mutation_p_) {
 			color_ = parent_dna.color_;
 		} else {
@@ -129,9 +128,7 @@ public:
 		fill_priority_();
 	}
 
-	DNA(DNA&& parent_dna) {
-		genes_ = std::move(parent_dna.genes_);
-		color_ = std::move(parent_dna.color_);
+	DNA(DNA&& parent_dna) : genes_(parent_dna.genes_), color_ (parent_dna.color_) {
 		fill_priority_();
 	}
 	const Gene& get(int i) const {
