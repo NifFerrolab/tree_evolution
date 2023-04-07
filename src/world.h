@@ -44,7 +44,7 @@ private:
 	static constexpr int img_w = 1920, img_h = 1080;
 	static constexpr int resize_step = 2;
 	static constexpr int graph_h_ = 100 / resize_step, spacer_ = 4 / resize_step, text_w = 400 / resize_step;
-	static constexpr int lines_ = 2;
+	static constexpr int lines_ = 3;
 	static constexpr int W = img_w * lines_ / resize_step, H = (img_h / resize_step - graph_h_ - spacer_ * (lines_ + 1)) / lines_;
 	std::list<std::shared_ptr<Tree>> trees_ {};
 	Sun sun_;

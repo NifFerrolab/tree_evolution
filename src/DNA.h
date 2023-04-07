@@ -14,7 +14,8 @@ class DNA {
 public:
 	static constexpr int size = 16;
 	DNA(int color_idx, int trees) {
-		color_ = {(uint8_t)((color_idx % 2 * 90 + color_idx / 2 * 45) % 180), 255, 160};
+//		color_ = {(uint8_t)((color_idx % 2 * 90 + color_idx / 2 * 45) % 180), 255, 160};
+		color_ = {(uint8_t)(color_idx * 60), 255, 160};
 		fill_priority_();
 
 //		// min energy

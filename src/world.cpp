@@ -10,7 +10,7 @@ World::World(int w_s) {
 		col.reserve(128);
 	}
 	std::srand(w_s);
-	static constexpr int seeds_start = 4;
+	static constexpr int seeds_start = 3;
 	for(int i = 0; i < seeds_start; ++i) {
 		create_tree_((2 * i + 1) * W / 2 / seeds_start, Seed(DNA(i, seeds_start), Sun::min_e));
 	}
