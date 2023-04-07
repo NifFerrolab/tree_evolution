@@ -22,6 +22,7 @@ struct Outgrowth {
 	int energy;
 	int priority;
 	uint8_t gene_idx;
+	int8_t balance_c;
 };
 
 
@@ -113,7 +114,7 @@ public:
 			}
 
 			balance_ += og->pos.x - x_;
-			dist_b_ += std::abs(og->pos.x - x_);
+			dist_b_ += og->balance_c * std::abs(og->pos.x - x_);
 
 			add_outgrowths_(og->pos, og->gene_idx);
 
@@ -201,28 +202,28 @@ private:
 			int need_energy = (og.first < dna_.size)
 			                  ? branch_energy_by_height_(pos.y)
 			                  : seed_energy_by_height_(pos.y);
-			outgrowths_.push_front({{pos.x - 1, pos.y}, need_energy, 0, og.second, og.first});
+			outgrowths_.push_front({{pos.x - 1, pos.y}, need_energy, 0, og.second, og.first, 1});
 		}
 		// top
 		if (const auto& og = gene.next(1, age_); og.first < dna_.size + seeds_ && og.second != 0) {
 			int need_energy = (og.first < dna_.size)
 			                  ? branch_energy_by_height_(pos.y + 1)
 			                  : seed_energy_by_height_(pos.y + 1);
-			outgrowths_.push_front({{pos.x, pos.y + 1}, need_energy, 0, og.second, og.first});
+			outgrowths_.push_front({{pos.x, pos.y + 1}, need_energy, 0, og.second, og.first, 3});
 		}
 		// right
 		if (const auto& og = gene.next(2, age_); og.first < dna_.size + seeds_ && og.second != 0) {
 			int need_energy = (og.first < dna_.size)
 			                  ? branch_energy_by_height_(pos.y)
 			                  : seed_energy_by_height_(pos.y);
-			outgrowths_.push_front({{pos.x + 1, pos.y}, need_energy, 0, og.second, og.first});
+			outgrowths_.push_front({{pos.x + 1, pos.y}, need_energy, 0, og.second, og.first, 1});
 		}
 		// bottom
 		if (const auto& og = gene.next(3, age_); og.first < dna_.size + seeds_ && og.second != 0 && pos.y > 0) {
 			int need_energy = (og.first < dna_.size)
 			                  ? branch_energy_by_height_(pos.y - 1)
 			                  : seed_energy_by_height_(pos.y - 1);
-			outgrowths_.push_front({{pos.x, pos.y - 1}, need_energy, 0, og.second, og.first});
+			outgrowths_.push_front({{pos.x, pos.y - 1}, need_energy, 0, og.second, og.first, 0});
 		}
 	}
 };
