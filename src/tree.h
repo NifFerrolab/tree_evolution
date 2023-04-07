@@ -46,8 +46,9 @@ public:
 
 	void try_to_survive() {
 		energy_ -= 16 * mass_ + 4 * age_ + 4 * std::abs(balance_) + dist_b_;
-		for (auto og = outgrowths_.begin(); og != outgrowths_.end() && energy_ < 0; og = outgrowths_.erase(og)) {
+		for (auto og = outgrowths_.begin(); energy_ < 0 && og != outgrowths_.end(); og = outgrowths_.erase(og)) {
 			energy_ += og->energy / 2;
+			grow_sum_priority_ -= og->priority;
 		}
 //		print_info();
 	}
@@ -61,16 +62,9 @@ public:
 	}
 
 	void proceed_step() {
-		int64_t sum_priority = dna_.energy_accumulation_priority(age_) * mass_ / 64 + 1;
-//		int sum_priority = 0;
+		int64_t sum_priority = grow_sum_priority_ + dna_.energy_accumulation_priority(age_) * mass_ / 64 + 1;
 
 		++age_;
-		for (const auto& ps : preseeds_) {
-			sum_priority += ps.priority;
-		}
-		for (const auto& og : outgrowths_) {
-			sum_priority += og.priority;
-		}
 
 		for (auto& ps : preseeds_) {
 			int energy_add = (int64_t)energy_ * ps.priority / sum_priority;
@@ -106,6 +100,7 @@ public:
 
 			energy_ += og->energy - og->need_energy;
 			og->energy = og->need_energy;
+			grow_sum_priority_ -= og->priority;
 
 			if (! check_space(og->pos)) {
 				og->priority = 0;
@@ -135,6 +130,8 @@ public:
 				continue;
 			}
 			result.push_back({Seed{dna_, ps->energy / 2}, ps->pos});
+
+			grow_sum_priority_ -= ps->priority;
 			ps = preseeds_.erase(ps);
 		}
 
@@ -180,6 +177,7 @@ private:
 	int energy_;
 	int balance_ { 0 };
 	int dist_b_ { 0 };
+	int64_t grow_sum_priority_ { 0 };
 
 	DNA dna_;
 	int x_;
@@ -203,6 +201,7 @@ private:
 			                  ? branch_energy_by_height_(pos.y)
 			                  : seed_energy_by_height_(pos.y);
 			outgrowths_.push_front({{pos.x - 1, pos.y}, need_energy, 0, og.second, og.first, 1});
+			grow_sum_priority_ += og.second;
 		}
 		// top
 		if (const auto& og = gene.next(1, age_); og.first < dna_.size + seeds_ && og.second != 0) {
@@ -210,6 +209,7 @@ private:
 			                  ? branch_energy_by_height_(pos.y + 1)
 			                  : seed_energy_by_height_(pos.y + 1);
 			outgrowths_.push_front({{pos.x, pos.y + 1}, need_energy, 0, og.second, og.first, 3});
+			grow_sum_priority_ += og.second;
 		}
 		// right
 		if (const auto& og = gene.next(2, age_); og.first < dna_.size + seeds_ && og.second != 0) {
@@ -217,6 +217,7 @@ private:
 			                  ? branch_energy_by_height_(pos.y)
 			                  : seed_energy_by_height_(pos.y);
 			outgrowths_.push_front({{pos.x + 1, pos.y}, need_energy, 0, og.second, og.first, 1});
+			grow_sum_priority_ += og.second;
 		}
 		// bottom
 		if (const auto& og = gene.next(3, age_); og.first < dna_.size + seeds_ && og.second != 0 && pos.y > 0) {
@@ -224,6 +225,7 @@ private:
 			                  ? branch_energy_by_height_(pos.y - 1)
 			                  : seed_energy_by_height_(pos.y - 1);
 			outgrowths_.push_front({{pos.x, pos.y - 1}, need_energy, 0, og.second, og.first, 0});
+			grow_sum_priority_ += og.second;
 		}
 	}
 };
