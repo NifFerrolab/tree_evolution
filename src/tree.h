@@ -155,8 +155,9 @@ public:
 
 	std::vector<std::pair<Seed, Pos>> get_seeds_force() {
 		std::vector<std::pair<Seed, Pos>> result;
+		result.reserve(preseeds_.size());
 		for (const auto& ps : preseeds_) {
-			result.push_back({{dna_, ps.energy / 4}, ps.pos});
+			result.push_back({Seed{dna_, ps.energy / 4}, ps.pos});
 		}
 
 		return result;
