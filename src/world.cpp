@@ -65,13 +65,6 @@ bool World::check_life_exist() {
 
 bool World::check_space_method(const Pos& pos) {
 	int x = to_word_x_(pos.x);
-#ifdef HEIGHT
-	static int max_h = 0;
-	if (max_h < pos.y) {
-		max_h = pos.y;
-		std::cout << "New max h" << max_h << std::endl;
-	}
-#endif // HEIGHT
 	auto& col = branches_[x];
 	return pos.y >= 0 && ((size_t)pos.y >= col.size() || col[pos.y].expired());
 }
@@ -90,6 +83,11 @@ void World::give_energy_() {
 #ifdef SHOW
 	climat_monitor_.add_energy(sun_.current_sun_energy());
 #endif // SHOW
+
+#ifdef HEIGHT
+	size_t max_h = 0;
+#endif // HEIGHT
+
 	for (auto& col : branches_) {
 		while (! col.empty() && col.back().expired() ) {
 			col.pop_back();
@@ -103,7 +101,15 @@ void World::give_energy_() {
 				b_sh->give_energy(before - energy);
 			}
 		}
+
+#ifdef HEIGHT
+		max_h = std::max(max_h, col.size());
+#endif // HEIGHT
 	}
+
+#ifdef HEIGHT
+	height_file.write((char*)&max_h, sizeof(max_h));
+#endif // HEIGHT
 }
 
 void World::check_trees_() {

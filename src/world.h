@@ -66,6 +66,10 @@ private:
 	std::ofstream age_seed_file {"/tmp/age_seed", std::ios::binary};
 #endif // AGE_SEED
 
+#ifdef HEIGHT
+	std::ofstream height_file {"/tmp/height", std::ios::binary};
+#endif // HEIGHT
+
 	void give_energy_();
 
 	void check_trees_();
