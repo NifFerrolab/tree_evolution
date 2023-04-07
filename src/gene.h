@@ -23,9 +23,6 @@ struct DirectionGrow {
 
 class Gene {
 public:
-	static constexpr uint8_t max_v = 32;
-	static constexpr int priority_c = 64;
-
 	Gene() {
 		for (auto& og : next_outgrowth_) {
 			og.next_gene[0] = rand_int(max_v);
@@ -90,12 +87,15 @@ public:
 		return { og.next_gene[priority >= 0], std::abs(priority) + (priority >= 0) };
 	}
 
-	int energy_accumulation_priority (int age) const {
+	std::pair<int, int> energy_accumulation_priority () const {
 		int priority = 0;
+		int priority_add = 0;
 		for (const auto& og : next_outgrowth_) {
-			priority += age * og.priority_add + og.priority * priority_c;
+			priority += og.priority;
+			priority_add += og.priority_add;
 		}
-		return priority;
+		priority *= priority_c;
+		return {priority, priority_add};
 	}
 
 	bool operator == (const Gene& another) const {
@@ -103,6 +103,8 @@ public:
 	}
 
 private:
+	static constexpr uint8_t max_v = 32;
+	static constexpr int priority_c = 64;
 	std::array<DirectionGrow, 4> next_outgrowth_;
 };
 

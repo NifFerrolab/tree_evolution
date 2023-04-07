@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cmath>
+#include <algorithm>
 
 
 class DNA {
@@ -14,6 +15,8 @@ public:
 	static constexpr int size = 16;
 	DNA(int color_idx, int trees) {
 		color_ = {(uint8_t)((color_idx % 2 * 90 + color_idx / 2 * 45) % 180), 255, 160};
+		fill_priority_();
+
 //		// min energy
 //		genes_[0].next_outgrowth_[0] = {{31, 31}, 0, 0};
 //		genes_[0].next_outgrowth_[1] = {{16, 0}, 1, -9};
@@ -123,11 +126,13 @@ public:
 			color_[1] = parent_dna.color_[1];
 			color_[2] = std::max(std::min((parent_dna.color_[2] + rand_int(5) - 2), 255), 64);
 		}
+		fill_priority_();
 	}
 
 	DNA(DNA&& parent_dna) {
 		genes_ = std::move(parent_dna.genes_);
 		color_ = std::move(parent_dna.color_);
+		fill_priority_();
 	}
 	const Gene& get(int i) const {
 		return genes_[i];
@@ -142,19 +147,24 @@ public:
 	}
 
 	int64_t energy_accumulation_priority(int age) const {
-		int64_t priority = 0;
-		for (const auto& g : genes_ ) {
-			priority += g.energy_accumulation_priority(age);
-		}
-		if (priority < 0) {
-			priority = 0;
-		}
+		int64_t priority = std::max(priority_ + priority_add_ * age, 0l);
 		return priority;
 	}
 private:
 	static constexpr float mutation_p_ = std::pow(1023. / 1024, 256);
 	std::array<Gene, size> genes_ {};
 	cv::Vec3b color_;
+	int64_t priority_{0}, priority_add_{0};
+
+	void fill_priority_() {
+		priority_ = 0;
+		priority_add_ = 0;
+		for (const auto& g : genes_) {
+			auto p = g.energy_accumulation_priority();
+			priority_ += p.first;
+			priority_add_ += p.second;
+		}
+	}
 };
 
 
