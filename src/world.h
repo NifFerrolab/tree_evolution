@@ -19,6 +19,7 @@
 
 
 //#define AGE
+//#define AGE_SEED
 //#define HEIGHT
 //#define SHOW
 
@@ -60,6 +61,10 @@ private:
 #ifdef AGE
 	std::ofstream age_file {"/tmp/age", std::ios::binary};
 #endif // AGE
+
+#ifdef AGE_SEED
+	std::ofstream age_seed_file {"/tmp/age_seed", std::ios::binary};
+#endif // AGE_SEED
 
 	void give_energy_();
 

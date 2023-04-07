@@ -21,6 +21,10 @@ public:
 	bool check_alive() {
 		return energy_ >= 0;
 	}
+
+	int get_age() {
+		return age_;
+	}
 private:
 	DNA dna_;
 	int energy_;

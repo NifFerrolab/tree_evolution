@@ -139,6 +139,10 @@ void World::seeds_grow_() {
 			int idx = rand_int(seeds_[i].size());
 			auto s = std::next(seeds_[i].begin(), idx);
 			if (s->check_alive()) {
+#ifdef AGE_SEED
+				int age = s->get_age();
+				age_seed_file.write((char*)&age, sizeof(age));
+#endif // AGE_SEED
 				create_tree_(i, std::move(*s));
 			}
 			seeds_[i].erase(s);
