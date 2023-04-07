@@ -49,7 +49,7 @@ private:
 	std::list<std::shared_ptr<Tree>> trees_ {};
 	Sun sun_;
 	std::vector<std::list<Seed>> seeds_;
-	std::vector<std::array<std::weak_ptr<Tree>, H>> branches_;
+	std::vector<std::vector<std::weak_ptr<Tree>>> branches_;
 	std::vector<std::pair<Pos, cv::Vec3b>> seeds_pos_;
 	int step_ = 0;
 

@@ -5,6 +5,9 @@ World::World(int w_s) {
 //	std::cout << "Word H: " << H << std::endl;
 	seeds_.resize(W);
 	branches_.resize(W);
+	for (auto& col : branches_) {
+		col.reserve(128);
+	}
 	std::srand(w_s);
 	static constexpr int seeds_start = 4;
 	for(int i = 0; i < seeds_start; ++i) {
@@ -69,7 +72,8 @@ bool World::check_space_method(const Pos& pos) {
 		std::cout << "New max h" << max_h << std::endl;
 	}
 #endif // HEIGHT
-	return pos.y >= 0 && pos.y < H && branches_[x][pos.y].expired();
+	auto& col = branches_[x];
+	return pos.y >= 0 && ((size_t)pos.y >= col.size() || col[pos.y].expired());
 }
 
 int World::trees_count() {
@@ -87,9 +91,13 @@ void World::give_energy_() {
 	climat_monitor_.add_energy(sun_.current_sun_energy());
 #endif // SHOW
 	for (auto& col : branches_) {
+		while (! col.empty() && col.back().expired() ) {
+			col.pop_back();
+		}
+
 		int energy = sun_.get_energy();
-		for (int i = H - 1; i >= 0; --i) {
-			if (auto b_sh = col[i].lock()) {
+		for (auto i = col.rbegin(); i != col.rend(); ++i) {
+			if (auto b_sh = i->lock()) {
 				int before = energy;
 				energy = energy * 3 / 4;
 				b_sh->give_energy(before - energy);
@@ -128,16 +136,21 @@ void World::tree_grow_() {
 		auto branches = t->get_branches([this](const Pos& pos) {return this->check_space_method(pos);});
 		for (auto [x, y] : branches) {
 			x = to_word_x_(x);
-			branches_[x][y] = t;
+			auto& col = branches_[x];
+			if ((size_t)y >= col.size()) {
+				col.resize(y+1);
+			}
+			col[y] = t;
 		}
 	}
 }
 
 void World::seeds_grow_() {
 	for (int i = 0; i < W; ++i) {
-		if (branches_[i][0].expired() && ! seeds_[i].empty()) {
+		if (! seeds_[i].empty() && (branches_[i].empty() || branches_[i][0].expired())) {
 			int idx = rand_int(seeds_[i].size());
 			auto s = std::next(seeds_[i].begin(), idx);
+
 			if (s->check_alive()) {
 #ifdef AGE_SEED
 				int age = s->get_age();
@@ -193,7 +206,13 @@ int World::to_word_x_(int x) {
 void World::create_tree_(int x, Seed&& s) {
 	auto t = std::make_shared<Tree>(std::move(s), x);
 	trees_.push_front(t);
-	branches_[x][0] = t;
+
+	auto& col = branches_[x];
+	if (col.empty()) {
+		col.push_back(t);
+	} else {
+		col[0] = t;
+	}
 }
 
 #ifdef SHOW
@@ -203,7 +222,7 @@ void World::show_() {
 		const auto& col = branches_[i];
 		const int x = i % (W / lines_);
 		const int h_add = graph_h_ + (1 + i * lines_ / W) * (H + spacer_) - 1;
-		for (int j = 0; j < H; ++j) {
+		for (int j = 0; j < H && j < col.size(); ++j) {
 			int y = h_add - j;
 			if (auto b_sh = col[j].lock()) {
 				img.at<cv::Vec3b>(y, x) = b_sh->get_tree_color();
