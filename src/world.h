@@ -11,9 +11,9 @@
 #include <opencv2/videoio.hpp>
 
 #include <list>
+#include <set>
 #include <utility>
 #include <memory>
-#include <array>
 
 #include <fstream>
 
@@ -32,13 +32,13 @@ public:
 
 	void proceed_step();
 
-	bool check_life_exist();
+	bool check_life_exist() const;
 
 	bool check_space_method(const Pos& pos);
 
-	int trees_count();
+	int trees_count() const;
 
-	int current_step();
+	int current_step() const;
 
 private:
 	static constexpr int img_w = 1920, img_h = 1080;
@@ -48,7 +48,8 @@ private:
 	static constexpr int W = img_w * lines_ / resize_step, H = (img_h / resize_step - graph_h_ - spacer_ * (lines_ + 1)) / lines_;
 	std::list<std::shared_ptr<Tree>> trees_ {};
 	Sun sun_;
-	std::vector<std::list<Seed>> seeds_;
+	std::vector<std::multiset<Seed>> sleeping_seeds_;
+	std::vector<std::list<Seed>> growing_seeds_;
 	std::vector<std::vector<std::weak_ptr<Tree>>> branches_;
 	std::vector<std::pair<Pos, cv::Vec3b>> seeds_pos_;
 	int step_ = 0;

@@ -36,7 +36,7 @@ struct Preseed {
 
 class Tree {
 public:
-	Tree(Seed&& s, int pos) : energy_ (s.get_energy()), dna_ (std::move(s.dna_)), x_ (pos) {
+	Tree(Seed&& s, int pos) : energy_ (s.energy_), dna_ (std::move(s.dna_)), x_ (pos) {
 		add_outgrowths_({x_, 0}, 0);
 	};
 

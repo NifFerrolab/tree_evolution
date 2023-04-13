@@ -98,6 +98,15 @@ public:
 		return {priority, priority_add};
 	}
 
+	int seed_wait_time() const {
+		int t = 0;
+		for (const auto& d : next_outgrowth_) {
+			t += d.next_gene[1] - d.next_gene[0];
+		}
+
+		return t;
+	}
+
 	bool operator == (const Gene& another) const {
 		return next_outgrowth_ == another.next_outgrowth_;
 	}

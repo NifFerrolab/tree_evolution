@@ -3,7 +3,8 @@
 
 World::World(int w_s) {
 //	std::cout << "Word H: " << H << std::endl;
-	seeds_.resize(W);
+	sleeping_seeds_.resize(W);
+	growing_seeds_.resize(W);
 	branches_.resize(W);
 	for (auto& col : branches_) {
 		col.reserve(128);
@@ -29,32 +30,36 @@ World::~World() {
 
 void World::proceed_step() {
 	give_energy_();
+	seeds_grow_();
 	check_trees_();
 	tree_grow_();
-	seeds_grow_();
 	get_seeds_();
 
 #ifdef SHOW
 	if (step_ % 2 == 0) {
 		show_();
 	}
-//		show_();
+//	show_();
 #endif // SHOW
 
 	++step_;
-	if (step_ % 1000 == 0) {
+	if (step_ % 10000 == 0) {
 		std::cout << step_ / 1000 << std::endl;
 	}
-
-//	std::cout << step << std::endl;
 }
 
-bool World::check_life_exist() {
+bool World::check_life_exist() const {
 	if (! trees_.empty()) {
 		return true;
 	}
 
-	for (const auto& s : seeds_) {
+	for (const auto& s : sleeping_seeds_) {
+		if (! s.empty()) {
+			return true;
+		}
+	}
+
+	for (const auto& s : growing_seeds_) {
 		if (! s.empty()) {
 			return true;
 		}
@@ -69,11 +74,11 @@ bool World::check_space_method(const Pos& pos) {
 	return pos.y >= 0 && ((size_t)pos.y >= col.size() || col[pos.y].expired());
 }
 
-int World::trees_count() {
+int World::trees_count() const  {
 	return trees_.size();
 }
 
-int World::current_step() {
+int World::current_step() const  {
 	return step_;
 }
 
@@ -153,21 +158,36 @@ void World::tree_grow_() {
 
 void World::seeds_grow_() {
 	for (int i = 0; i < W; ++i) {
-		if (! seeds_[i].empty() && (branches_[i].empty() || branches_[i][0].expired())) {
-			int idx = rand_int(seeds_[i].size());
-			auto s = std::next(seeds_[i].begin(), idx);
+		auto& grow = growing_seeds_[i];
 
-			if (s->check_alive()) {
-#ifdef AGE_SEED
-				int age = s->get_age();
-				age_seed_file.write((char*)&age, sizeof(age));
-#endif // AGE_SEED
-				create_tree_(i, std::move(*s));
-			}
-			seeds_[i].erase(s);
+		// seeds wake up
+		for (auto s = sleeping_seeds_[i].begin();
+				s != sleeping_seeds_[i].end() && s->get_target_step() <= step_;
+				s = sleeping_seeds_[i].erase(s)) {
+			grow.push_back(std::move(*s));
 		}
-		for (auto& s : seeds_[i]) {
-			s.try_to_survive();
+
+		// seeds grow
+		if (! grow.empty() && (branches_[i].empty() || branches_[i][0].expired())) {
+			int idx = rand_int(grow.size());
+			auto s = std::next(grow.begin(), idx);
+
+#ifdef AGE_SEED
+			int age = s->get_age();
+			age_seed_file.write((char*)&age, sizeof(age));
+#endif // AGE_SEED
+			create_tree_(i, std::move(*s));
+			grow.erase(s);
+		}
+
+		// seeds wait
+		for (auto s = grow.begin(); s != grow.end() ;) {
+			s->try_to_survive();
+			if (s->check_alive()) {
+				++s;
+			} else {
+				s = grow.erase(s);
+			}
 		}
 	}
 }
@@ -189,6 +209,10 @@ void World::get_seeds_() {
 }
 
 void World::seed_to_ground_(std::pair<Seed, Pos>&& seed_data) {
+	seed_data.first.set_target_step(step_);
+	if (! seed_data.first.check_alive()) {
+		return;
+	}
 	while (seed_data.second.y >= 0) {
 		--seed_data.second.y;
 		switch (rand_int(4)) {
@@ -199,7 +223,8 @@ void World::seed_to_ground_(std::pair<Seed, Pos>&& seed_data) {
 			++seed_data.second.x;
 		}
 	}
-	seeds_[to_word_x_(seed_data.second.x)].push_front(std::move(seed_data.first));
+
+	sleeping_seeds_[to_word_x_(seed_data.second.x)].insert(std::move(seed_data.first));
 }
 
 int World::to_word_x_(int x) {
@@ -228,7 +253,7 @@ void World::show_() {
 		const auto& col = branches_[i];
 		const int x = i % (W / lines_);
 		const int h_add = graph_h_ + (1 + i * lines_ / W) * (H + spacer_) - 1;
-		for (int j = 0; j < H && j < col.size(); ++j) {
+		for (int j = 0; j < H && (size_t)j < col.size(); ++j) {
 			int y = h_add - j;
 			if (auto b_sh = col[j].lock()) {
 				img.at<cv::Vec3b>(y, x) = b_sh->get_tree_color();

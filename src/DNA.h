@@ -131,6 +131,7 @@ public:
 	DNA(DNA&& parent_dna) : genes_(parent_dna.genes_), color_ (parent_dna.color_) {
 		fill_priority_();
 	}
+
 	const Gene& get(int i) const {
 		return genes_[i];
 	}
@@ -146,6 +147,17 @@ public:
 	int64_t energy_accumulation_priority(int age) const {
 		int64_t priority = std::max(priority_ + priority_add_ * age, 0l);
 		return priority;
+	}
+
+	int seed_wait_time() const {
+		int t = 0;
+		int sign = 1;
+		for (const auto& g : genes_) {
+			t += sign * g.seed_wait_time();
+			sign *= -1;
+		}
+
+		return std::max(4 * t, 1);
 	}
 private:
 	static constexpr float mutation_p_ = std::pow(1023. / 1024, 256);
