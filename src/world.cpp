@@ -124,12 +124,12 @@ void World::check_trees_() {
 		if (! (*t)->check_alive()) {
 #ifdef AGE
 			const int age = (*t)->get_age();
-#endif //  AGE
+#endif // AGE
 			const auto seed_color = (*t)->get_seed_color();
 			for (auto& s : (*t)->get_seeds_force()) {
 #ifdef AGE
 				age_file.write((char*)(&age), sizeof(age));
-#endif //  AGE
+#endif // AGE
 				seeds_pos_.emplace_back(s.second, seed_color);
 				seed_to_ground_(std::move(s));
 			}
@@ -223,6 +223,11 @@ void World::seed_to_ground_(std::pair<Seed, Pos>&& seed_data) {
 			++seed_data.second.x;
 		}
 	}
+
+#ifdef SLEEP_SEED
+	int sleep = seed_data.first.get_target_step() - step_;
+	sleep_seed_file.write((char*)&sleep, sizeof(sleep));
+#endif // SLEEP_SEED
 
 	sleeping_seeds_[to_word_x_(seed_data.second.x)].insert(std::move(seed_data.first));
 }
