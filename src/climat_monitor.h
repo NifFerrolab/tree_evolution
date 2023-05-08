@@ -17,9 +17,7 @@ public:
 
 	void add_energy(int last_energy) {
 		energy_.push_back(last_energy - min_e_);
-	}
 
-	const std::deque<float>& get_stats() {
 		while ((int)energy_.size() >= step_per_point_) {
 			float new_p = 0;
 			for (int i = 0; i < step_per_point_; ++i) {
@@ -30,6 +28,9 @@ public:
 			graph_.pop_front();
 			graph_.push_back(new_p);
 		}
+	}
+
+	const std::deque<float>& get_stats() {
 
 		return graph_;
 	}
