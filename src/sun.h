@@ -13,32 +13,15 @@ public:
 	static constexpr int rand_add = 16;
 	static constexpr int move_num = 10, move_denum = 3;
 
-	Sun() {
-		std::cout << "Min e " << min_e << std::endl;
-	};
+	Sun();
 
-	int get_energy() {
-//		return 359;
-		return energy_ + step_add + rand_int(rand_add);
-	}
+	int get_energy();
 
-	void next_step() {
-		step_add = rand_int(rand_add);
-		energy_ += (rand_int(2 * move_num + 1) - move_num) / move_denum;
-		if (energy_ < min_e) {
-			energy_ = min_e;
-		} else if (energy_ > max_e) {
-			energy_ = max_e;
-		}
-	}
+	void next_step();
 
-	int current_sun_energy() {
-		return energy_ + rand_add - 1;
-	}
+	int current_sun_energy();
 
-	static constexpr int min_energy() {
-		return min_e + rand_add - 1;
-	}
+	static constexpr int min_energy();
 private:
 	int energy_ { start_e };
 	int step_add { 0 };

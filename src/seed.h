@@ -7,32 +7,19 @@
 class Seed {
 	friend class Tree;
 public:
-	Seed(const DNA& dna, int energy) : dna_ (dna), energy_ (energy) { };
+	Seed(const DNA& dna, int energy);
 
-	void set_target_step(int step) {
-		target_step_ = dna_.seed_wait_time() + step;
-	}
+	void set_target_step(int step);
 
-	int get_target_step() const {
-		return target_step_;
-	}
+	int get_target_step() const;
 
-	void try_to_survive () {
-		energy_ -= 4 + age_;
-		++age_;
-	}
+	void try_to_survive ();
 
-	bool check_alive() const {
-		return energy_ >= 0;
-	}
+	bool check_alive() const;
 
-	int get_age() const {
-		return age_;
-	}
+	int get_age() const;
 
-	bool operator < (const Seed& another) const {
-		return target_step_ < another.target_step_;
-	}
+	bool operator < (const Seed& another) const;
 private:
 	DNA dna_;
 	int energy_;
