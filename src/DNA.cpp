@@ -1,8 +1,10 @@
 #include "DNA.h"
 
 DNA::DNA(int color_idx, int trees) {
+#ifdef SHOW
 //		color_ = {(uint8_t)((color_idx % 2 * 90 + color_idx / 2 * 45) % 180), 255, 160};
 	color_ = {(uint8_t)(color_idx * 60), 255, 160};
+#endif // SHOW
 	fill_priority_();
 
 //		// min energy
@@ -97,7 +99,9 @@ DNA::DNA(int color_idx, int trees) {
 DNA::DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
 	float mut = rand_float();
 	if (mut < mutation_p_) {
+#ifdef SHOW
 		color_ = parent_dna.color_;
+#endif // SHOW
 	} else {
 		int mut_c = 1;
 		mut -= mutation_p_;
@@ -110,15 +114,21 @@ DNA::DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
 		for (int i = 0; i < mut_c; ++i) {
 			genes_[rand_int(size)].mutation();
 		}
+#ifdef SHOW
 		color_[0] = (parent_dna.color_[0] + rand_int(5) + 178) % 180;
 		color_[1] = parent_dna.color_[1];
 		color_[2] = std::max(std::min((parent_dna.color_[2] + rand_int(5) - 2), 255), 64);
+#endif // SHOW
 	}
 	fill_priority_();
 }
 
 
-DNA::DNA(DNA&& parent_dna) : genes_(parent_dna.genes_), color_ (parent_dna.color_) {
+DNA::DNA(DNA&& parent_dna) : genes_(parent_dna.genes_)
+#ifdef SHOW
+, color_ (parent_dna.color_)
+#endif // SHOW
+{
 	fill_priority_();
 }
 
@@ -128,6 +138,7 @@ const Gene& DNA::get(int i) const {
 }
 
 
+#ifdef SHOW
 cv::Vec3b DNA::get_tree_color() const {
 	return color_;
 }
@@ -136,6 +147,7 @@ cv::Vec3b DNA::get_tree_color() const {
 cv::Vec3b DNA::get_seed_color() const {
 	return {color_[0], 128, (uint8_t)((255 + color_[2]) / 2)};
 }
+#endif // SHOW
 
 
 int64_t DNA::energy_accumulation_priority(int age) const {

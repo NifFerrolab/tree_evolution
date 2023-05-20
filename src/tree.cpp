@@ -138,6 +138,7 @@ std::vector<std::pair<Seed, Pos>> Tree::get_seeds_force() {
 }
 
 
+#ifdef SHOW
 cv::Vec3b Tree::get_tree_color() const {
 	return dna_.get_tree_color();
 }
@@ -146,6 +147,7 @@ cv::Vec3b Tree::get_tree_color() const {
 cv::Vec3b Tree::get_seed_color() const {
 	return dna_.get_seed_color();
 }
+#endif // SHOW
 
 
 int Tree::branch_energy_by_height_(int y) {

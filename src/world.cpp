@@ -1,7 +1,7 @@
 #include "world.h"
 
 
-World::World(int w_s) {
+World::World(uint w_s) {
 //	std::cout << "Word H: " << H << std::endl;
 	sleeping_seeds_.resize(W);
 	growing_seeds_.resize(W);
@@ -118,19 +118,25 @@ void World::give_energy_() {
 }
 
 void World::check_trees_() {
+#ifdef SHOW
 	seeds_pos_.clear();
+#endif // SHOW
 	for (auto t = trees_.begin(); t != trees_.end(); ) {
 		(*t)->try_to_survive();
 		if (! (*t)->check_alive()) {
 #ifdef AGE
 			const int age = (*t)->get_age();
 #endif // AGE
+#ifdef SHOW
 			const auto seed_color = (*t)->get_seed_color();
+#endif // SHOW
 			for (auto& s : (*t)->get_seeds_force()) {
 #ifdef AGE
 				age_file.write((char*)(&age), sizeof(age));
 #endif // AGE
+#ifdef SHOW
 				seeds_pos_.emplace_back(s.second, seed_color);
+#endif // SHOW
 				seed_to_ground_(std::move(s));
 			}
 			t = trees_.erase(t);
@@ -194,15 +200,19 @@ void World::seeds_grow_() {
 
 void World::get_seeds_() {
 	for (auto& t : trees_) {
+#ifdef SHOW
 		const auto seed_color = t->get_seed_color();
+#endif // SHOW
 #ifdef AGE
 		const int age = t->get_age();
-#endif //  AGE
+#endif // AGE
 		for (auto& s : t->get_seeds()) {
 #ifdef AGE
 			age_file.write((char*)(&age), sizeof(age));
-#endif //  AGE
+#endif // AGE
+#ifdef SHOW
 			seeds_pos_.emplace_back(s.second, seed_color);
+#endif // SHOW
 			seed_to_ground_(std::move(s));
 		}
 	}
@@ -267,6 +277,9 @@ void World::show_() {
 	}
 
 	for (const auto& sp : seeds_pos_) {
+		if (sp.first.y >= H) {
+			continue;
+		}
 		int x_ = to_word_x_(sp.first.x);
 		int x = x_ % (W / lines_);
 		int y = graph_h_ + (1 + x_ * lines_ / W) * (H + spacer_) - 1 - sp.first.y;

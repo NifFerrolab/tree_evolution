@@ -7,7 +7,7 @@ namespace chr = std::chrono;
 
 
 int main(int argc, char *argv[]) {
-	int w_i = chr::time_point_cast<chr::seconds>(chr::system_clock::now()).time_since_epoch().count();
+	uint w_i = chr::time_point_cast<chr::seconds>(chr::system_clock::now()).time_since_epoch().count();
 	if (argc > 1) {
 		w_i = std::atoi(argv[1]);
 	}

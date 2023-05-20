@@ -56,9 +56,11 @@ public:
 
 	std::vector<std::pair<Seed, Pos>> get_seeds_force();
 
+#ifdef SHOW
 	cv::Vec3b get_tree_color() const;
 
 	cv::Vec3b get_seed_color() const;
+#endif // SHOW
 private:
 	static constexpr int seeds_ = 8;
 

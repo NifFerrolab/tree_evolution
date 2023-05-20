@@ -6,9 +6,11 @@
 #include "sun.h"
 #include "climat_monitor.h"
 
+#ifdef SHOW
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/videoio.hpp>
+#endif // SHOW
 
 #include <list>
 #include <set>
@@ -27,7 +29,7 @@
 
 class World {
 public:
-	World(int w_s);
+	World(uint w_s);
 
 	~World();
 
@@ -52,7 +54,9 @@ private:
 	std::vector<std::multiset<Seed>> sleeping_seeds_;
 	std::vector<std::list<Seed>> growing_seeds_;
 	std::vector<std::vector<std::weak_ptr<Tree>>> branches_;
+#ifdef SHOW
 	std::vector<std::pair<Pos, cv::Vec3b>> seeds_pos_;
+#endif // SHOW
 	int step_ = 0;
 
 #ifdef SHOW

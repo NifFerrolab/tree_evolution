@@ -3,7 +3,9 @@
 
 #include "gene.h"
 
+#ifdef SHOW
 #include <opencv2/core.hpp>
+#endif
 
 #include <array>
 #include <cmath>
@@ -21,9 +23,11 @@ public:
 
 	const Gene& get(int i) const;
 
+#ifdef SHOW
 	cv::Vec3b get_tree_color() const;
 
 	cv::Vec3b get_seed_color() const;
+#endif // SHOW
 
 	int64_t energy_accumulation_priority(int age) const;
 
@@ -31,7 +35,9 @@ public:
 private:
 	static constexpr float mutation_p_ = std::pow(1023. / 1024, 256);
 	std::array<Gene, size> genes_ {};
+#ifdef SHOW
 	cv::Vec3b color_;
+#endif // SHOW
 	int64_t priority_{0}, priority_add_{0};
 
 	void fill_priority_();
