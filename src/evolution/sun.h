@@ -19,7 +19,7 @@ public:
 
 	void next_step();
 
-	int current_sun_energy();
+	int current_sun_energy() const;
 
 	static constexpr int min_energy();
 private:

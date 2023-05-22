@@ -1,4 +1,8 @@
 #include "world.h"
+#ifdef SHOW
+#include "world_img.h"
+#include "video_output.h"
+#endif // SHOW
 
 #include <chrono>
 #include <cstdlib>
@@ -19,9 +23,15 @@ int main(int argc, char *argv[]) {
 	std::cout << "w_i " << w_i << std::endl;
 	auto begin = chr::steady_clock::now();
 	World w(w_i);
-	++w_i;
+#ifdef SHOW
+	World_Img img_maker(w);
+	Video_Output video(img_maker, w_i);
+#endif // SHOW
 	while(w.current_step() < steps && w.check_life_exist()) {
 		w.proceed_step();
+#ifdef SHOW
+		video.feed_img();
+#endif // SHOW
 	}
 	if (! w.check_life_exist()) {
 		std::cout << "All died\n";

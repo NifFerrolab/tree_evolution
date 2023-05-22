@@ -2,7 +2,6 @@
 
 
 World::World(uint w_s) {
-//	std::cout << "Word H: " << H << std::endl;
 	sleeping_seeds_.resize(W);
 	growing_seeds_.resize(W);
 	branches_.resize(W);
@@ -14,19 +13,7 @@ World::World(uint w_s) {
 	for(int i = 0; i < seeds_start; ++i) {
 		create_tree_((2 * i + 1) * W / 2 / seeds_start, Seed(DNA(i, seeds_start), Sun::min_e));
 	}
-#ifdef SHOW
-	video_ = cv::VideoWriter{"/Windows/D/Downloads/Videos/digital_trees/" + std::to_string(w_s) + "_" + std::to_string(Sun::min_e) + ".mkv",
-		cv::VideoWriter::fourcc('H', '2', '6', '4'), 60, {img_w, img_h}};
-#endif // SHOW
 }
-
-World::~World() {
-#ifdef SHOW
-	video_.release();
-#endif // SHOW
-}
-
-
 
 void World::proceed_step() {
 	give_energy_();
@@ -34,13 +21,6 @@ void World::proceed_step() {
 	check_trees_();
 	tree_grow_();
 	get_seeds_();
-
-#ifdef SHOW
-	if (step_ % 2 == 0) {
-		show_();
-	}
-//	show_();
-#endif // SHOW
 
 	++step_;
 	if (step_ % 10000 == 0) {
@@ -260,58 +240,3 @@ void World::create_tree_(int x, Seed&& s) {
 		col[0] = t;
 	}
 }
-
-#ifdef SHOW
-void World::show_() {
-	cv::Mat img(img_h / resize_step, img_w / resize_step, CV_8UC3, {0, 0, 0});
-	for (int i = 0; i < W; ++i) {
-		const auto& col = branches_[i];
-		const int x = i % (W / lines_);
-		const int h_add = graph_h_ + (1 + i * lines_ / W) * (H + spacer_) - 1;
-		for (int j = 0; j < H && (size_t)j < col.size(); ++j) {
-			int y = h_add - j;
-			if (auto b_sh = col[j].lock()) {
-				img.at<cv::Vec3b>(y, x) = b_sh->get_tree_color();
-			}
-		}
-	}
-
-	for (const auto& sp : seeds_pos_) {
-		if (sp.first.y >= H) {
-			continue;
-		}
-		int x_ = to_word_x_(sp.first.x);
-		int x = x_ % (W / lines_);
-		int y = graph_h_ + (1 + x_ * lines_ / W) * (H + spacer_) - 1 - sp.first.y;
-		img.at<cv::Vec3b>(y, x) = sp.second;
-	}
-
-	auto stats = climat_monitor_.get_stats();
-	for (int i = 0; i < (int)stats.size(); ++i) {
-		img.at<cv::Vec3b>(graph_h_ * (1 - stats[i]), i) = {(uint8_t)(120 + 60 * stats[i]), 255, 255};
-	}
-
-	cv::cvtColor(img, img, cv::COLOR_HSV2BGR);
-
-	for (int i = 0; i < lines_ + 1; ++i) {
-		cv::rectangle(img, {0, graph_h_+i*(H+spacer_)}, {img.cols-1, (graph_h_+spacer_)+i*(H+spacer_)}, {128, 128, 128}, -1);
-	}
-
-	cv::resize(img, img, cv::Size(), resize_step, resize_step, cv::INTER_NEAREST);
-
-	cv::putText(img, "Sun energy: " + std::to_string(sun_.current_sun_energy()),
-			cv::Point(0, 32), cv::FONT_HERSHEY_COMPLEX, 1, {255, 255, 255}, 1, cv::LINE_AA);
-
-	cv::putText(img, "Step: " + std::to_string(step_),
-			cv::Point(0, 64), cv::FONT_HERSHEY_COMPLEX, 1, {255, 255, 255}, 1, cv::LINE_AA);
-
-	cv::putText(img, "Trees alive: " + std::to_string(trees_.size()),
-			cv::Point(0, 96), cv::FONT_HERSHEY_COMPLEX, 1, {255, 255, 255}, 1, cv::LINE_AA);
-
-//	cv::imshow("World", img);
-//	cv::waitKey(1);
-
-	video_ << img;
-}
-#endif // SHOW
-

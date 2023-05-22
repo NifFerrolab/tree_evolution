@@ -25,7 +25,7 @@ void Sun::next_step() {
 }
 
 
-int Sun::current_sun_energy() {
+int Sun::current_sun_energy() const {
 	return energy_ + rand_add - 1;
 }
 
