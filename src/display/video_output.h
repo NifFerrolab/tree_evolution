@@ -1,7 +1,7 @@
 #ifndef SRC_DISPLAY_VIDEO_SHOW_H_
 #define SRC_DISPLAY_VIDEO_SHOW_H_
 
-#include "basic_show.h"
+#include "basic_output.h"
 
 #include <opencv2/videoio.hpp>
 

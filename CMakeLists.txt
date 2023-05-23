@@ -7,6 +7,7 @@ if (SHOW)
 	include_directories(src/display)
 	set(SOURCES src/display/world_img.cpp
 	            src/display/video_output.cpp
+	            src/display/window_output.cpp
 	            src/evolution/climat_monitor.cpp)
 	add_compile_definitions(SHOW)
 	find_package(OpenCV REQUIRED)
