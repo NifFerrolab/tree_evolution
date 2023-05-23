@@ -1,6 +1,6 @@
 # tree_evolution
 ## About
-Simulation of a evolution of "digital trees".
+Simulation of an evolution of "digital trees".
 
 The project was created for entertainment purposes. It does not aim to simulate or investigate the evolution taking place in the real world.
 
