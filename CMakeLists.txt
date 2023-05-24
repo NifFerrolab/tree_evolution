@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 if (SHOW)
 	include_directories(src/display)
 	set(SOURCES src/display/world_img.cpp
+	            src/display/img_output.cpp
 	            src/display/video_output.cpp
 	            src/display/window_output.cpp
 	            src/evolution/climat_monitor.cpp)
