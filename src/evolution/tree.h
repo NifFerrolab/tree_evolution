@@ -61,6 +61,10 @@ public:
 
 	cv::Vec3b get_seed_color() const;
 #endif // SHOW
+
+#ifdef HEIGHT
+	int get_height() const;
+#endif // HEIGHT
 private:
 	static constexpr int seeds_ = 8;
 
@@ -70,6 +74,9 @@ private:
 	int balance_ { 0 };
 	int dist_b_ { 0 };
 	int64_t grow_sum_priority_ { 0 };
+#ifdef HEIGHT
+	int height_ { 0 };
+#endif // HEIGHT
 
 	DNA dna_;
 	int x_;

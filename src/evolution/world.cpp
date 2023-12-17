@@ -21,6 +21,12 @@ void World::proceed_step() {
 	check_trees_();
 	tree_grow_();
 	get_seeds_();
+#ifdef HEIGHT
+	for (auto& t : trees_) {
+		short h = t->get_height();
+		height_file.write((char*)&h, sizeof(h));
+	}
+#endif // HEIGHT
 
 	++step_;
 	if (step_ % 10000 == 0) {
@@ -69,10 +75,6 @@ void World::give_energy_() {
 	climat_monitor_.add_energy(sun_.current_sun_energy());
 #endif // SHOW
 
-#ifdef HEIGHT
-	size_t max_h = 0;
-#endif // HEIGHT
-
 	for (auto& col : branches_) {
 		while (! col.empty() && col.back().expired() ) {
 			col.pop_back();
@@ -86,15 +88,7 @@ void World::give_energy_() {
 				b_sh->give_energy(before - energy);
 			}
 		}
-
-#ifdef HEIGHT
-		max_h = std::max(max_h, col.size());
-#endif // HEIGHT
 	}
-
-#ifdef HEIGHT
-	height_file.write((char*)&max_h, sizeof(max_h));
-#endif // HEIGHT
 }
 
 void World::check_trees_() {
@@ -102,15 +96,16 @@ void World::check_trees_() {
 	seeds_pos_.clear();
 #endif // SHOW
 	for (auto t = trees_.begin(); t != trees_.end(); ) {
-		(*t)->try_to_survive();
-		if (! (*t)->check_alive()) {
+		Tree& tree = **t;
+		tree.try_to_survive();
+		if (! tree.check_alive()) {
 #ifdef AGE
-			const int age = (*t)->get_age();
+			const int age = tree.get_age();
 #endif // AGE
 #ifdef SHOW
-			const auto seed_color = (*t)->get_seed_color();
+			const auto seed_color = tree.get_seed_color();
 #endif // SHOW
-			for (auto& s : (*t)->get_seeds_force()) {
+			for (auto& s : tree.get_seeds_force()) {
 #ifdef AGE
 				age_file.write((char*)(&age), sizeof(age));
 #endif // AGE

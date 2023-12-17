@@ -80,6 +80,10 @@ std::vector<Pos> Tree::get_branches(std::function<bool(const Pos&)> check_space)
 			continue;
 		}
 
+#ifdef HEIGHT
+		height_ = std::max(height_, og->pos.y);
+#endif // HEIGHT
+
 		balance_ += og->pos.x - x_;
 		dist_b_ += og->balance_c * std::abs(og->pos.x - x_);
 
@@ -149,6 +153,12 @@ cv::Vec3b Tree::get_seed_color() const {
 }
 #endif // SHOW
 
+
+#ifdef HEIGHT
+int Tree::get_height() const {
+	return height_;
+}
+#endif // HEIGHT
 
 int Tree::branch_energy_by_height_(int y) {
 	return 64 + 16 * y;
