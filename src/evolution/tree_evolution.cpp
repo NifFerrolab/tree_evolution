@@ -27,8 +27,15 @@ int main(int argc, char *argv[]) {
 	World_Img img_maker(w);
 	Video_Output video(img_maker, w_i);
 #endif // SHOW
+#ifdef TREES_COUNT
+	std::ofstream f {"/tmp/trees_count", std::ios::binary};
+#endif // TREES_COUNT
 	while(w.current_step() < steps && w.check_life_exist()) {
 		w.proceed_step();
+#ifdef TREES_COUNT
+		short c = w.trees_count();
+		f.write((char*)&c, sizeof(c));
+#endif // TREES_COUNT
 #ifdef SHOW
 		video.feed_img();
 #endif // SHOW

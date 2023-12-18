@@ -15,7 +15,7 @@ if (SHOW)
 endif()
 
 if (STATS)
-	add_compile_definitions(AGE AGE_SEED SLEEP_SEED HEIGHT)
+	add_compile_definitions(AGE AGE_SEED SLEEP_SEED HEIGHT TREES_COUNT)
 endif()
 
 include_directories(src/evolution)
