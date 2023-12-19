@@ -2,8 +2,13 @@
 
 DNA::DNA(int color_idx, int trees) {
 #ifdef SHOW
-//		color_ = {(uint8_t)((color_idx % 2 * 90 + color_idx / 2 * 45) % 180), 255, 160};
-	color_ = {(uint8_t)(color_idx * 60), 255, 160};
+	uint8_t color;
+	if (trees % 2) {
+		color = static_cast<uint8_t>((trees / 2 * color_idx) * 180 / trees % 180);
+	} else {
+		color = static_cast<uint8_t>((trees / 2 * color_idx - color_idx / 2) * 180 / trees % 180);
+	}
+	color_ = {color, 255, 160};
 #endif // SHOW
 	fill_priority_();
 
