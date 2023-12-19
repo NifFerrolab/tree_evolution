@@ -35,7 +35,7 @@ public:
 	int current_step() const;
 
 private:
-	static constexpr int W = 1920 * 3 / 2;
+	static constexpr int W = 1920 * 2;
 	std::list<std::shared_ptr<Tree>> trees_ {};
 	Sun sun_;
 	std::vector<std::multiset<Seed>> sleeping_seeds_;

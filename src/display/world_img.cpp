@@ -6,7 +6,7 @@
 static constexpr int img_w = 1920, img_h = 1080;
 static constexpr int resize_step = 2;
 static constexpr int graph_h_ = 100 / resize_step, spacer_ = 4 / resize_step;
-static constexpr int lines_ = 3;
+static constexpr int lines_ = 4;
 
 World_Img::World_Img(const World& w) : w_(w), W(img_w), H(img_h), resize_(resize_step),
 		line_h_((H / resize_ - graph_h_ - spacer_ * (lines_ + 1)) / lines_) {
