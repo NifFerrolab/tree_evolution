@@ -7,7 +7,6 @@ option(SHOW "SHOW" on)
 option(STATS "STATS" Off)
 
 if (SHOW)
-	include_directories(src/display)
 	set(SOURCES src/display/world_img.cpp
 	            src/display/img_output.cpp
 	            src/display/video_output.cpp
@@ -21,7 +20,6 @@ if (STATS)
 	add_compile_definitions(AGE AGE_SEED SLEEP_SEED HEIGHT TREES_COUNT)
 endif()
 
-include_directories(src/evolution)
 set(SOURCES ${SOURCES}
             src/evolution/DNA.cpp
             src/evolution/gene.cpp
@@ -33,4 +31,8 @@ set(SOURCES ${SOURCES}
             src/evolution/world.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_include_directories(${PROJECT_NAME} PRIVATE src/evolution)
+if (SHOW)
+    target_include_directories(${PROJECT_NAME} PRIVATE src/display)
+endif()
 target_link_libraries(${PROJECT_NAME} PRIVATE ${OpenCV_LIBS})
