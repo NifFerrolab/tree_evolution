@@ -3,6 +3,9 @@ project (tree_evolution)
 
 set(CMAKE_CXX_STANDARD 17)
 
+option(SHOW "SHOW" on)
+option(STATS "STATS" Off)
+
 if (SHOW)
 	include_directories(src/display)
 	set(SOURCES src/display/world_img.cpp
