@@ -1,6 +1,6 @@
 #include "DNA.h"
 
-DNA::DNA(int color_idx, int trees) {
+DNA::DNA(int color_idx, int trees) : initial_parent_(color_idx) {
 #ifdef SHOW
 	uint8_t color;
 	if (trees % 2) {
@@ -101,7 +101,9 @@ DNA::DNA(int color_idx, int trees) {
 }
 
 
-DNA::DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
+DNA::DNA(const DNA& parent_dna)
+: genes_ (parent_dna.genes_)
+, initial_parent_ (parent_dna.initial_parent_) {
 	float mut = rand_float();
 	if (mut < mutation_p_) {
 #ifdef SHOW
@@ -137,11 +139,17 @@ DNA::DNA(DNA&& parent_dna) : genes_(parent_dna.genes_)
 #endif // SHOW
 , priority_ (parent_dna.priority_)
 , priority_add_ (parent_dna.priority_add_)
+, initial_parent_ (parent_dna.initial_parent_)
 { }
 
 
 const Gene& DNA::get(int i) const {
 	return genes_[i];
+}
+
+
+uint8_t DNA::get_parent() const {
+	return initial_parent_;
 }
 
 

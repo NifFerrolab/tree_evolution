@@ -29,12 +29,13 @@ int main(int argc, char *argv[]) {
 #endif // SHOW
 #ifdef TREES_COUNT
 	std::ofstream f {"/tmp/trees_count", std::ios::binary};
+	f.write((char*)&w.seeds_start, 1);
 #endif // TREES_COUNT
 	while(w.current_step() < steps && w.check_life_exist()) {
 		w.proceed_step();
 #ifdef TREES_COUNT
-		short c = w.trees_count();
-		f.write((char*)&c, sizeof(c));
+		auto counts = w.trees_count();
+		f.write((char*)counts.data(), sizeof(counts.front()) * counts.size());
 #endif // TREES_COUNT
 #ifdef SHOW
 		video.feed_img();

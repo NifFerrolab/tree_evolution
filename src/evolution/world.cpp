@@ -9,7 +9,6 @@ World::World(uint w_s) {
 		col.reserve(128);
 	}
 	std::srand(w_s);
-	static constexpr int seeds_start = 4;
 	for(int i = 0; i < seeds_start; ++i) {
 		create_tree_((2 * i + 1) * W / 2 / seeds_start, Seed(DNA(i, seeds_start), Sun::min_e));
 	}
@@ -60,8 +59,12 @@ bool World::check_space_method(const Pos& pos) {
 	return pos.y >= 0 && ((size_t)pos.y >= col.size() || col[pos.y].expired());
 }
 
-int World::trees_count() const  {
-	return trees_.size();
+std::array<uint16_t, World::seeds_start> World::trees_count() const  {
+	std::array<uint16_t, seeds_start> result {0};
+	for (const auto& tree : trees_) {
+		++result[tree->get_parent()];
+	}
+	return result;
 }
 
 int World::current_step() const  {

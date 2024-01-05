@@ -141,6 +141,10 @@ std::vector<std::pair<Seed, Pos>> Tree::get_seeds_force() {
 	return result;
 }
 
+uint8_t Tree::get_parent() const {
+	return dna_.get_parent();
+}
+
 
 #ifdef SHOW
 cv::Vec3b Tree::get_tree_color() const {

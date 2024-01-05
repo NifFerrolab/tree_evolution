@@ -18,10 +18,11 @@
 
 #include <fstream>
 
-
 class World {
 	friend class World_Img;
 public:
+	static constexpr int seeds_start = 4;
+
 	World(uint w_s);
 
 	void proceed_step();
@@ -30,10 +31,9 @@ public:
 
 	bool check_space_method(const Pos& pos);
 
-	int trees_count() const;
+	std::array<uint16_t, seeds_start> trees_count() const;
 
 	int current_step() const;
-
 private:
 	static constexpr int W = 1920 * 2;
 	std::list<std::shared_ptr<Tree>> trees_ {};

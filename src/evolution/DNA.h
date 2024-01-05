@@ -23,6 +23,8 @@ public:
 
 	const Gene& get(int i) const;
 
+	uint8_t get_parent() const;
+
 #ifdef SHOW
 	cv::Vec3b get_tree_color() const;
 
@@ -39,6 +41,7 @@ private:
 	cv::Vec3b color_;
 #endif // SHOW
 	int64_t priority_{0}, priority_add_{0};
+	uint8_t initial_parent_ {0};
 
 	void fill_priority_();
 };
