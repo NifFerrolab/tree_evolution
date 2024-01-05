@@ -107,6 +107,8 @@ DNA::DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
 #ifdef SHOW
 		color_ = parent_dna.color_;
 #endif // SHOW
+		priority_ = parent_dna.priority_;
+		priority_add_ = parent_dna.priority_add_;
 	} else {
 		int mut_c = 1;
 		mut -= mutation_p_;
@@ -124,8 +126,8 @@ DNA::DNA(const DNA& parent_dna) : genes_(parent_dna.genes_) {
 		color_[1] = parent_dna.color_[1];
 		color_[2] = std::max(std::min((parent_dna.color_[2] + rand_int(5) - 2), 255), 64);
 #endif // SHOW
+		fill_priority_();
 	}
-	fill_priority_();
 }
 
 
@@ -133,9 +135,9 @@ DNA::DNA(DNA&& parent_dna) : genes_(parent_dna.genes_)
 #ifdef SHOW
 , color_ (parent_dna.color_)
 #endif // SHOW
-{
-	fill_priority_();
-}
+, priority_ (parent_dna.priority_)
+, priority_add_ (parent_dna.priority_add_)
+{ }
 
 
 const Gene& DNA::get(int i) const {
