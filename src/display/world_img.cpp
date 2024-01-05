@@ -17,7 +17,7 @@ World_Img::World_Img(const World& w) : w_(w), W(img_w), H(img_h), resize_(resize
 cv::Mat World_Img::get_img() {
 	if (w_.current_step() == last_step_) {
 		return last_img_;
-    }
+	}
 
 	last_step_ = w_.current_step();
 	last_img_ = cv::Mat(H / resize_, W / resize_, CV_8UC3, {0, 0, 0});
