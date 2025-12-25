@@ -35,7 +35,7 @@ public:
 
 	int current_step() const;
 private:
-	static constexpr int W = 1920 * 2;
+	static constexpr int W = 1920;
 	std::list<std::shared_ptr<Tree>> trees_ {};
 	Sun sun_;
 	std::vector<std::multiset<Seed>> sleeping_seeds_;
@@ -47,7 +47,7 @@ private:
 	int step_ = 0;
 
 #ifdef SHOW
-	Climat climat_monitor_ {1920 / 2, 128 * 1024 / 4, Sun::min_e + Sun::rand_add - 1, Sun::max_e + Sun::rand_add - 1, Sun::start_e};
+	Climat climat_monitor_ {1920 / 2, 32 * 1024, Sun::min_e + Sun::rand_add - 1, Sun::max_e + Sun::rand_add - 1};
 #endif // SHOW
 
 #ifdef AGE

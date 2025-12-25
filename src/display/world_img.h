@@ -14,7 +14,6 @@ public:
 private:
 	const World& w_;
 	const int W, H;
-	const int resize_;
 	const int line_h_;
 	cv::Mat last_img_ {};
 	int last_step_ { -1 };

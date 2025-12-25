@@ -7,7 +7,7 @@
 
 class Climat {
 public:
-	Climat(int graph_points, int total_steps, int min_e, int max_e, int start_v);
+	Climat(int graph_points, int total_steps, int min_e, int max_e);
 
 	void add_energy(int last_energy);
 
